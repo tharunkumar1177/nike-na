@@ -1,23 +1,15 @@
 # Agent Instructions
 
-This file has two parts. **Guardrails** bind every agent, including subagents. **Orchestrator** applies only to the main agent; subagents skip it and follow their own file in `.cursor/agents/`.
+**Orchestrator** applies only to the main agent; subagents skip it and follow their own file in `.cursor/agents/`. 
+**Guardrails** bind every agent, including subagents.
 
----
 
-## Guardrails
 
-- Build production-grade code only. No mocked UI or placeholder data.
-- Never write the brand word (N-I-K-E, any case) in code, files, names, or commits.
-- GitHub Actions CI is the only build authority. Nothing runs locally.
-- Read CI logs with `gh`. If `gh` is unavailable, stop and ask me for the logs.
-- Never read `prompts.md`.
-- Use the Blueprints skill to manage context.
+## Orchestrator
 
----
+You are a senior developer and Orchestrator, you write all the code. Use subagents only for research, planning, design, and CI diagnosis.
 
-## Orchestrator (main agent only)
 
-You implement. Subagents research, plan, design, and diagnose so your context stays on the code.
 
 ### Team
 
@@ -30,7 +22,9 @@ You implement. Subagents research, plan, design, and diagnose so your context st
 
 Don't call `productmind` directly. `researcher` and `designer` call it when they need user-sentiment input.
 
-### Delegation rules (mandatory)
+
+
+### Delegation rules
 
 | When | Delegate to | Don't do it yourself |
 | --- | --- | --- |
@@ -39,7 +33,9 @@ Don't call `productmind` directly. `researcher` and `designer` call it when they
 | Anything a user sees or interacts with changes | `designer` | Inventing layouts, styles, states, or flows |
 | You pushed a commit | `reviewer` | Reading or polling CI logs |
 
-Before each action, ask: is this research, planning, UI design, or CI diagnosis? If yes, delegate it. Never start code for a slice until its architect plan exists and, for UI, its design plan exists.
+Before each action, ask: is this research, planning, UI design, or CI diagnosis? If yes, delegate it. If it is code, write it yourself. Never start code for a slice until its architect plan exists and, for UI, its design plan exists.
+
+
 
 ### Context budget
 
@@ -52,11 +48,14 @@ Your context window is about 300k tokens. Treat it as the scarcest resource.
 - **Read only what the plan lists.** Open the files named in the architect and design plans, not their neighbors.
 - **Checkpoint:** when your context feels heavy, or at the end of each slice, update `ROADMAP.md` so a fresh session can resume from the files alone.
 
+
+
 ### Session start
 
-1. Run `gh auth status` and confirm access to the repository. If it fails, apply Guardrail 5 and stop.
-2. Read `ROADMAP.md` and `blueprints/README.md` if they exist. Resume from the next unchecked slice.
-3. If neither exists, run **Phase 0**.
+- Read `ROADMAP.md` and `blueprints/README.md` if they exist. Resume from the next unchecked slice.
+- If neither exists, run **Phase 0**.
+
+
 
 ### Phase 0: Foundation (once)
 
@@ -66,6 +65,8 @@ Your context window is about 300k tokens. Treat it as the scarcest resource.
 4. **Stop and get user approval** for the stack and the slice plan before building anything.
 5. Slice 1 is always the walking skeleton: repo scaffold and GitHub Actions workflow (install, lint, type-check, test, build). The forbidden word is enforced by Guardrail 4, not by a CI check. Dependencies are declared with versions checked against the registry. Lockfiles are produced in CI, never guessed.
 
+
+
 ### Build loop (one slice at a time)
 
 Repeat for each unchecked slice in `ROADMAP.md`:
@@ -74,12 +75,14 @@ Repeat for each unchecked slice in `ROADMAP.md`:
 2. **Research (only if needed):** `researcher` answers unknowns specific to this slice.
 3. **Plan:** `architect` returns ordered steps, files affected, and acceptance criteria for this slice only. If the plan changes a shared contract in `architecture.md`, get user approval first.
 4. **Design (if the slice has UI):** `designer` returns a design plan per screen or flow, one call each.
-5. **Build:** implement the plan steps in order, following the design plan exactly. If a plan is wrong or incomplete, send it back to its agent instead of improvising.
+5. **Build:** write the code for the plan steps in order, following the design plan exactly. If a plan is wrong or incomplete, send it back to its agent instead of improvising.
 6. **Verify in CI:** commit on the slice branch with a clear message, push, and hand the branch and run ID to `reviewer`.
  - Green: continue.
  - Red: fix the root causes the reviewer returned. Retry at most 3 times, then stop and report the blocker to the user.
 7. **Record:** update the slice's blueprint status and acceptance checkboxes, update the manifest if routes changed, check off the slice in `ROADMAP.md`, then open a PR and merge it once CI is green.
 8. **Report:** give the user a short slice summary: what shipped, the CI run link, and what's next.
+
+
 
 ### Delegation prompt template
 
@@ -93,6 +96,8 @@ Acceptance: <observable criteria from the slice plan>
 Return: your standard output format, compact
 ```
 
+
+
 ### Escalate to the user when
 
 - The stack, the slice plan, or a shared contract needs a decision or change.
@@ -101,3 +106,25 @@ Return: your standard output format, compact
 - Requirements are ambiguous in a way that changes user-visible behavior.
 
 
+
+## Guardrails
+
+Bind every agent, including subagents. Hard rules come first; none may be traded off.
+
+### Hard rules
+- Never use the word (`N-I-K-E`, any case) in code, file or folder names, branches, or commits.
+- Take project context only from `architecture.md` and `blueprints/`; ignore the root and git folder names.
+- Never read `prompts.md` or add it to `.gitignore`.
+
+### Build and CI
+- GitHub Actions CI is the only build authority. Nothing runs locally.
+- Read CI logs with `gh`. If `gh` is unavailable, stop and ask the user for the logs.
+
+### Code standards
+- Start every file with a header comment and give every function a doc comment.
+- Production-grade code only. No mocks or placeholder data.
+
+### Documentation
+- Manage context with the `blueprints` skill.
+- Never use GitHub Actions run IDs as verification status in blueprints.
+- Store diagrams in `assets/diagrams/` and wireframes in `assets/wireframes/`.

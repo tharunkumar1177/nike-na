@@ -27,25 +27,46 @@ For [clean up for browser, system, temp files and so on] clearing system-level f
 
 
 
+I'd keep "doc comment." "Function-level comments" is easier to read, but it's less precise, and agents may interpret it more loosely:
+
+- **It could mean comments inside the function body**, so an agent might add line-by-line comments instead of one summary above the function.
+- **It doesn't name a format.** "Doc comment" tells the agent to use the language's standard documentation format (JSDoc/TSDoc, Python docstrings). That format is what makes the comment show up on hover and in generated docs.
+- **The quality bar is vague.** A one-line `// handles cart` would count as a function-level comment.
+
+If you prefer the friendlier wording, add the detail that makes it unambiguous:
+
+```markdown
+- Start every file with a header comment describing its purpose.
+- Give every function a function-level doc comment (JSDoc/TSDoc, docstring) placed directly above it, covering purpose, parameters, return value, and errors.
+```
+
+This keeps your phrasing and still tells agents where the comment goes, which format to use, and what it must cover.
+
 
 --------------
 
 
-# Guardrails
+## Guardrails
 
-- Never use the word (`N-I-K-E`, any case) in codebase, file creation, names, or commits.
-- GitHub Actions CI is the only build authority. Nothing runs locally.
-- Read CI logs with `gh-cli`. If `gh` is unavailable, stop and ask the user for the logs.
+Bind every agent, including subagents. Hard rules come first; none may be traded off.
+
+### Hard rules
+- Never use the word (`N-I-K-E`, any case) in code, file or folder names, branches, or commits.
+- Take project context only from `architecture.md` and `blueprints/`; ignore the root and git folder names.
 - Never read `prompts.md` or add it to `.gitignore`.
 
+### Build and CI
+- GitHub Actions CI is the only build authority. Nothing runs locally.
+- Read CI logs with `gh`. If `gh` is unavailable, stop and ask the user for the logs.
 
-### Engineering practices
+### Code standards
 - Start every file with a header comment and give every function a doc comment.
-- Build production-grade code only. No mocks or placeholder data.
-- Manage context with the Blueprints skill.
-- Take project context only from `README.md` and `architecture.md`; ignore the root and git folder names.
+- Production-grade code only. No mocks or placeholder data.
+
+### Documentation
+- Manage context with the `blueprints` skill.
 - Never use GitHub Actions run IDs as verification status in blueprints.
-- Store diagrams in `assets/.diagrams/` and wireframes in `assets/wireframes/`.
+- Store diagrams in `assets/diagrams/` and wireframes in `assets/wireframes/`.
 
 
 ## Git commands
