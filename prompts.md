@@ -157,46 +157,7 @@ ssh -T git@github.com
 --------------
 
 
-## Agents 
 
-
-## AGENT HQ
-
-we already have agents [Research, Designer, Architect, Coder, Planner, Reviewer]. find the opitimal model for these from the available list.
-Design specialized subagent for Cursor [ Reviewer]. Describe its role and how it should respond. Give description for each agent (cursor) and if additional property required - add them as well.
-
-
-
-Research Agent - Research for the existing product's system, features.
-
-Designer - responsible for designing Aesthetics and intuitive UI,  UI workflows. Returns Design plan with granular details. currently it writes code
-
-Coder - writes code consider every possible edge cases
-
-Productmind - Researches [external media like relevant subreddit page, ] what existing product failed address or could have done better that speaks for the product itself. can only be called by {Designer, Research Agent}
-
-Reviewer - reviews code by build error check via gh-cli CI logs, polls and returns what actually causing build fails/ errors
-
-Planner - comes up with a plan, proceeds further if it is approved. writes plan in md file and wait for approval. Planner can invoke these Agents {Architect, Researcher, productmind}
-
-
----
-
-write all the Agent config in an .md file
-
-
-subAgent - Research, review through CI logs
-
-
-- Also come up with the list of best model that are best fit that specific role. [Do web research, get data from only legit sites. Do not spawn subAgents for this task]
-
-
-### SubAgent models:
-
-- **Claude:** Opus 4.5 (high thinking), Sonnet 4.5 (thinking), Sonnet 4, Haiku 4.5 (thinking)
-- **GPT:** 5.1, 5.2, 5.3 Codex, 5.4 Mini, 5.4 Nano, 5 Mini
-- **Gemini:** 3.1 Pro, 3.5 Flash, 3 Flash, 2.5 Flash
-- **Others:** Kimi K3, Kimi K2.7 Code, GLM 5.2, Composer 2.5
 
 ROADMAP.md
 
@@ -437,6 +398,37 @@ Never consider project root folder; archictecture.md is the only source of truth
 
 // (`.cursor/hooks.json` with a `beforeReadFile` hook): runs a script that denies reads of `prompts.md`.
 // A `beforeShellExecution` hook can also catch `cat prompts.md` and similar commands.
+
+
+
+--------------
+
+
+
+
+
+
+
+Yes, but only move the Orchestrator section into the command. Keep the Guardrails in `AGENTS.md`. Your empty `.cursor/commands/oneshotbuild.md` is a good place for it.
+
+**Why a command fits the Orchestrator section:**
+- A command loads only when you type `/oneshotbuild`, so subagents never see the orchestrator instructions. That fixes the relevance problem.
+- It matches how you'd use it: you start a build session on purpose, and the command kicks it off.
+
+**Why the Guardrails must stay in `AGENTS.md`:**
+- `AGENTS.md` is applied automatically to every chat. A command only applies when you remember to run it.
+- If the forbidden-word rule, CI-only, and `prompts.md` rules lived in a command, any chat started without `/oneshotbuild` would ignore them.
+
+**One risk to plan for:** command text arrives as part of your first message, not as standing context. In a long build session, Cursor may summarize older messages to save space, and the detailed build loop could get compressed away. To guard against that, add one line to the Orchestrator section of `AGENTS.md`:
+
+```markdown
+Main agent: when running a build session, re-read `.cursor/commands/oneshotbuild.md` at the start of each slice.
+```
+
+A fresh session also needs `/oneshotbuild` run again. That's fine, because the workflow already resumes from `ROADMAP.md`.
+
+With this split, `AGENTS.md` shrinks to about 20 lines of guardrails plus that pointer. The workflow lives in the command and can be re-read whenever it's needed. Should I make the split?
+
 
 
 
