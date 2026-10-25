@@ -17,9 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import com.materialkolor.dynamicColorScheme
-
-/** User preference for light or dark appearance. */
-enum class ThemeMode { System, Light, Dark }
+import com.music.player.core.model.ThemeMode
 
 /**
  * Applies the app color scheme, typography, and shapes to [content].
