@@ -1,11 +1,11 @@
-Build a Notion clone, every features should exactly be like Notion but keep the project name as something else. Tech stack - for frontend I think they use Next js and figure out other stacks (come up optimal one)
+
 
 optimize the guardrails for AI Agent. Do not elaborate it or exaggerate it. keep it short and simple
 
 
-keep in mind that Orchestrator should not just give the other agents a big chunk of work [because the model has only 300k context window], instead it should iteratively build the application using these agents
 
-Github Actions CI is the only compile and Build authority, there is no local runtime. By default use Blueprints skill for  managing context. first come up with a plan and write Agent file for cursor. Build our application with aesthetics and intuitive UI. 
+Github Actions CI is the only compile and Build authority, there is no local runtime. 
+By default use Blueprints skill for  managing context. first come up with a plan and write Agent file for cursor. Build our application with aesthetics and intuitive UI. 
 
 
 architect doesn't going to run build commands, it's job is to calculate the feasibility, trade-offs and future scope for better scalability and maintainbility
@@ -169,23 +169,11 @@ In the Agent Orchestration workflow, the main agent has to write code here after
 
 -----------------
 
+Sidepanel chat → **Ctrl+I** or **Ctrl+L**
+Agent Layout → **Ctrl+E** (toggle)
+Agents Window → Open Agents Window
 
 
-
-
-**Agent Layout** is Cursor’s agent-first IDE arrangement: the window is organized around chatting with the agent, running tools, and reviewing changes—not only a code editor with chat bolted on the side.
-
-### How it differs from other UIs
-
-| Surface | What it is | Typical shortcut |
-|--------|------------|------------------|
-| **Sidepanel chat** | Agent chat in a side panel; editor stays VS Code–like | **Ctrl+I** or **Ctrl+L** |
-| **Agent Layout** | Whole-window layout tuned for agent work (sidebars flip/rearrange) | **Ctrl+E** (toggle) |
-| **Agents Window** | Separate agent-focused window (multi-agent, worktrees, diffs) | Command Palette → **Open Agents Window** |
-
-Opening the sidepanel does **not** automatically switch Agent Layout. **Ctrl+E** toggles the layout mode; **Ctrl+I** toggles the chat panel.
-
-Community reports (not always spelled out in docs): in **Editor** layout the main sidebar (Explorer, Git) is often on the **left**; in **Agent** layout agents may be on the **left** and the classic sidebar on the **right**.
 
 ### What you get in Agent Layout
 
@@ -216,21 +204,6 @@ Start a new chat (/clear or /new in the CLI)
 
 
 
-
-
-
-
-
-
-
-
-
-The agent finds the library's ID, then pulls the relevant docs into its context.
-
-**Name the library directly** to skip the lookup step. Use its ID, written as `/owner/repo`:
-
-> Implement Supabase auth with email magic links. use library /supabase/supabase
-
 **Make it automatic with a rule.** Create `.cursor/rules/context7.mdc`:
 
 ```markdown
@@ -258,26 +231,20 @@ Context7 ....`researcher` and `architect` --- checking library APIs and versions
 
 
 
+## Worktree
 
 A worktree is a second working folder attached to the same git repository. Each folder has a different branch checked out, and you can edit both at the same time.
 
-Normally a repository has one folder (here `c:\n-tracker`), and it can only show one branch at a time. Switching branches swaps the files in that folder. `git worktree add <folder> <branch>` creates another folder with a different branch checked out, and both folders share the same history, commits and remote. A commit made in either folder is immediately visible from the other, because there's only one repository underneath.
-
-That's why I used one:
-- Another session had `c:\n-tracker` on the `promo-video` branch.
-- I needed to work on `slice-2-project-shell` without switching branches under that session.
-- So I ran `git worktree add C:\tron-slice2 slice-2-project-shell`, which gave me a second folder showing the Slice 2 branch.
-- I committed and pushed from there, then removed it with `git worktree remove`.
-
-Removing a worktree only deletes that extra folder. The commits made in it stay in the repository, so nothing was lost.
-
-Useful commands:
+### commands:
 - `git worktree list` shows every folder attached to the repository.
 - `git worktree add <path> <branch>` creates one.
 - `git worktree remove <path>` deletes one. Git refuses if the folder has uncommitted changes.
 
 
+
 -------
+
+
 
 `.prettierignore` lists the files and folders that Prettier, the code formatter, should skip. It works like `.gitignore`, but it controls formatting instead of git tracking.
 
@@ -403,32 +370,23 @@ Never consider project root folder; archictecture.md is the only source of truth
 
 --------------
 
+- Hardcode subagents that they are subAgents
 
-
-
-
-
-
-Yes, but only move the Orchestrator section into the command. Keep the Guardrails in `AGENTS.md`. Your empty `.cursor/commands/oneshotbuild.md` is a good place for it.
-
-**Why a command fits the Orchestrator section:**
 - A command loads only when you type `/oneshotbuild`, so subagents never see the orchestrator instructions. That fixes the relevance problem.
-- It matches how you'd use it: you start a build session on purpose, and the command kicks it off.
 
-**Why the Guardrails must stay in `AGENTS.md`:**
-- `AGENTS.md` is applied automatically to every chat. A command only applies when you remember to run it.
-- If the forbidden-word rule, CI-only, and `prompts.md` rules lived in a command, any chat started without `/oneshotbuild` would ignore them.
 
-**One risk to plan for:** command text arrives as part of your first message, not as standing context. In a long build session, Cursor may summarize older messages to save space, and the detailed build loop could get compressed away. To guard against that, add one line to the Orchestrator section of `AGENTS.md`:
+- Guardrails must stay in `AGENTS.md`
+- `AGENTS.md` is applied automatically to every chat.
+
+- command text arrives as part of your first message, not as standing context. In a long build session, Cursor may summarize older messages to save space, and the detailed build loop could get compressed away.... `AGENTS.md`:
 
 ```markdown
 Main agent: when running a build session, re-read `.cursor/commands/oneshotbuild.md` at the start of each slice.
 ```
 
-A fresh session also needs `/oneshotbuild` run again. That's fine, because the workflow already resumes from `ROADMAP.md`.
-
-With this split, `AGENTS.md` shrinks to about 20 lines of guardrails plus that pointer. The workflow lives in the command and can be re-read whenever it's needed. Should I make the split?
 
 
 
+
+prompts.log
 
