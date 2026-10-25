@@ -6,7 +6,7 @@ Audio keeps playing in the background with full system integration: media notifi
 
 ## Current verified status
 
-**Status:** Planned.
+**Status:** Partial. `PlaybackService` (`MediaSessionService` with ExoPlayer) and `PlayerController` are implemented and compile in CI, with audio focus, pause on becoming noisy, a local wake lock, queue persistence, and a skip on decode errors. Queue rules and the persistence codec are unit-tested. Notification, lock screen, Bluetooth, and background behavior are unverified on a device.
 
 ## Architecture dependencies
 
@@ -34,15 +34,25 @@ None
 
 ## Relevant implementation and tests
 
-- `core/playback/` — planned
+- `core/playback/PlaybackService.kt`:
+  - ExoPlayer configuration, the shuffle `ForwardingPlayer`, and the session activity (`MainActivity.ACTION_OPEN_PLAYER`).
+  - Queue restore, removal of deleted tracks, and debounced saves.
+  - `onAddMediaItems` resolves id-only items, and `onPlaybackResumption` restores the queue.
+- `core/playback/PlayerController.kt` — `MediaController` wrapper exposing `PlayerState`, position, and messages. `MainActivity` connects it in `onStart` and disconnects it in `onStop`.
+- `core/playback/MediaItems.kt`, `core/playback/PlayerState.kt`, `core/playback/QueueStore.kt`, `core/playback/QueueRules.kt`.
+- `app/src/main/AndroidManifest.xml` — permissions and the exported `mediaPlayback` service.
+- Tests: `app/src/test/java/com/music/player/core/playback/QueueRulesTest.kt` (play-next cursor, shuffle and restore, snapshot codec).
 
 ## Acceptance or verification criteria
 
 - [ ] Tapping a song plays it, and a media notification with play/pause/next/previous appears.
 - [ ] Playback continues with the screen off and the app swiped away from recents.
 - [ ] Unplugging headphones pauses playback; an incoming call pauses, then resumes.
-- [ ] Unit tests cover the `PlayerState` mapping and queue persistence.
+- [x] Unit tests cover queue persistence (snapshot encode and decode).
+- [ ] Unit tests cover the `PlayerState` mapping.
 
 ## Remaining gaps and unknowns
 
+- The device-behavior criteria need a device; CI has no instrumented tests.
+- The `PlayerState` mapping reads a live `MediaController`, so it has no JVM unit test yet.
 - Android Auto (`MediaLibrarySession` browse tree), equalizer, crossfade, and ReplayGain are later slices.

@@ -6,7 +6,7 @@ Users share audio files to other apps and delete them from the device, with syst
 
 ## Current verified status
 
-**Status:** Planned.
+**Status:** Partial. Share (`ACTION_SEND` with a read grant) and Delete (`MediaStore.createTrashRequest`, system confirmation) are implemented from the track action sheet and compile in CI. The system dialogs are unverified on a device.
 
 ## Architecture dependencies
 
@@ -31,7 +31,13 @@ Users share audio files to other apps and delete them from the device, with syst
 
 ## Relevant implementation and tests
 
-- `feature/library/actions/` — planned
+- `ui/MusicApp.kt`:
+  - `shareTrack` sends a single file.
+  - `requestDelete` launches the trash request through `StartIntentSenderForResult`.
+  - On success it shows "Moved to trash".
+- `core/ui/components/TrackActions.kt` — Share and "Delete from device" actions.
+- `core/playback/PlaybackService.kt` — drops deleted tracks from the queue when the library changes.
+- Tests: none; these are platform calls.
 
 ## Acceptance or verification criteria
 
@@ -40,4 +46,6 @@ Users share audio files to other apps and delete them from the device, with syst
 
 ## Remaining gaps and unknowns
 
+- Both criteria need a device.
+- Only trash is offered; the permanent `createDeleteRequest` path and multi-file `ACTION_SEND_MULTIPLE` are not implemented.
 - Ringtone setting and tag editing are later slices.

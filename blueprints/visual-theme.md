@@ -6,7 +6,7 @@ A cohesive, calm, premium look: a Material 3 theme that adapts to the current ar
 
 ## Current verified status
 
-**Status:** Planned.
+**Status:** Partial. The tokens, Outfit typography, brand and OLED schemes, and the artwork seed chain are implemented and compile in CI: Palette seed, then MaterialKolor scheme, then system dynamic color, then brand. So are the 400 ms scheme crossfade with reduced-motion snap, the gradient placeholder, and the app shell. Placeholder rules are unit-tested; visual results are unverified on a device.
 
 ## Architecture dependencies
 
@@ -43,7 +43,11 @@ None
 
 ## Relevant implementation and tests
 
-- `core/ui/` — planned
+- `core/ui/theme/` — `Color.kt`, `Type.kt`, `Tokens.kt`, `Theme.kt`, `ArtworkColors.kt` (LRU-cached seed per album id).
+- `core/ui/components/ArtworkPlaceholder.kt`, `core/ui/components/Artwork.kt`.
+- `ui/MusicApp.kt` — applies `MusicTheme` with the seed of the current album and the user's appearance settings, and hosts the bottom `NavigationBar` shell.
+- `feature/settings/SettingsScreen.kt` — theme mode (System, Light, Dark) and the "Colors from artwork" switch.
+- Tests: `app/src/test/java/com/music/player/core/ui/components/PlaceholderArtTest.kt`.
 
 ## Acceptance or verification criteria
 
@@ -52,4 +56,5 @@ None
 
 ## Remaining gaps and unknowns
 
-- The detailed visual direction comes from the designer plan for each UI slice.
+- Both criteria need a device. The placeholder's hue and initials rules are unit-tested, but not its rendering.
+- Shimmer loading rows from the design plan are not implemented; a progress indicator is used.

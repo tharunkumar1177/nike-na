@@ -6,7 +6,7 @@ Users see and control what plays next: a visible "Up next" list with Play next a
 
 ## Current verified status
 
-**Status:** Planned.
+**Status:** Partial. The queue sheet, play next, add to queue, reorder by handle, swipe-to-remove with undo, shuffle, repeat, and persistence are implemented and compile in CI. Play-next ordering and shuffle restore are unit-tested; the sheet interactions are unverified on a device.
 
 ## Architecture dependencies
 
@@ -19,6 +19,8 @@ Users see and control what plays next: a visible "Up next" list with Play next a
 - "Add to queue" appends to the end.
 - Shuffle reorders only upcoming items and keeps the current track; turning shuffle off restores the original order.
 - A track deleted from the device is removed from the queue silently.
+- Shuffle is a real reorder of the player timeline, done in `PlaybackService` through a `ForwardingPlayer`, with ExoPlayer's shuffle order left unshuffled. Every controller (notification, Bluetooth, the app) therefore sees the same order. Duplicate tracks are tracked by item identity, not by id.
+- Controllers send id-only `MediaItem`s; the service resolves them to full items in `onAddMediaItems`.
 
 ### Design plan (approved 2026-10-25)
 
@@ -38,14 +40,20 @@ Users see and control what plays next: a visible "Up next" list with Play next a
 
 ## Relevant implementation and tests
 
-- `feature/player/queue/`, `core/playback/` — planned
+- `feature/player/QueueSheet.kt` — `QueueActions` contract and the sheet. It uses the `sh.calvin.reorderable` drag handles, `SwipeToDismissBox` for removal, and an in-sheet snackbar with Undo.
+- `core/playback/QueueRules.kt` — `PlayNextCursor`, `ShuffleRules`, `QueueSnapshot`.
+- `core/playback/PlayerController.kt` — `playNext`, `addToQueue`, `moveQueueItem`, `removeQueueItem`, `insertQueueItem`, `setShuffle`, `cycleRepeat`.
+- `core/playback/PlaybackService.kt`, `core/playback/QueueStore.kt` — shuffle reorder and persistence.
+- Tests: `app/src/test/java/com/music/player/core/playback/QueueRulesTest.kt`.
 
 ## Acceptance or verification criteria
 
 - [ ] The queue sheet shows the current track and upcoming tracks.
 - [ ] Reorder and remove work, and remove can be undone.
-- [ ] Unit tests cover play-next ordering and shuffle restore.
+- [x] Unit tests cover play-next ordering and shuffle restore.
 
 ## Remaining gaps and unknowns
 
-None
+- The sheet criteria need a device.
+- The error-and-recovery dependency above expects Clear to offer undo, but the sheet has no Clear action yet.
+- "Save queue as playlist" is not implemented.

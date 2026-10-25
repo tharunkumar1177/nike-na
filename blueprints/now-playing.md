@@ -6,7 +6,7 @@ A persistent mini player above the navigation bar expands with a fluid, gesture-
 
 ## Current verified status
 
-**Status:** Planned.
+**Status:** Partial. The mini player and Now Playing are one gesture-driven surface (`PlayerSheet`). It has the drag-progress morph, spring settle, reduced-motion snap, seek bar with ±10 s accessibility actions, transport, favorite, overflow actions, and swipe-to-skip. It compiles in CI; gesture feel and re-tinting are unverified on a device.
 
 ## Architecture dependencies
 
@@ -40,7 +40,10 @@ A persistent mini player above the navigation bar expands with a fluid, gesture-
 
 ## Relevant implementation and tests
 
-- `feature/player/` — planned
+- `feature/player/PlayerSheet.kt` — the `PlayerUiActions` contract, the morphing surface, mini and full content, seek bar, and transport.
+- `ui/MusicApp.kt` — owns the expansion `Animatable`, places the sheet above the navigation bar, and opens it on `MainActivity.ACTION_OPEN_PLAYER` (notification tap).
+- `core/ui/theme/ArtworkColors.kt` — seed extraction used to re-tint the theme per track.
+- Tests: none specific; the surface is UI-only.
 
 ## Acceptance or verification criteria
 
@@ -50,4 +53,10 @@ A persistent mini player above the navigation bar expands with a fluid, gesture-
 
 ## Remaining gaps and unknowns
 
+- All criteria need a device; there are no UI tests in CI.
+- Differences from the design plan in the current code:
+  - The mini player also has a Next button.
+  - The overflow menu also has Go to album and Go to artist.
+  - The play/pause button uses the `primary` container color.
+  - The background blur uses `Modifier.blur`, which falls back to no blur below API 31; minSdk 33 makes that moot.
 - Lyrics display is a later slice.
