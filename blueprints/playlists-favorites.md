@@ -20,6 +20,12 @@ Users create, rename, reorder, and delete playlists, add tracks to them, and mar
 - Favorites is a flag set, not a playlist row, so it cannot be deleted or renamed.
 - A playlist can contain the same track more than once; each entry has its own position.
 
+### Design plan (approved 2026-10-25)
+
+- Playlists screen: Favorites pinned first with a heart tile, then playlists (generated gradient tile, name, song count); extended FAB "New playlist"; empty copy "No playlists yet".
+- Playlist detail: header with name, song count, and total duration, "Play all" / "Shuffle" buttons, drag-to-reorder rows, overflow with Rename and Delete.
+- Create/rename: `AlertDialog` with `OutlinedTextField`, "Cancel" / "Save". Add-to-playlist: `ModalBottomSheet` with "New playlist" row at top.
+
 ## Related blueprints
 
 ### Required

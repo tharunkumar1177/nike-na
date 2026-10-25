@@ -20,6 +20,18 @@ Users browse their library by Songs, Albums, Artists, and Folders, drill into an
 - The album detail header uses large artwork and a color derived from it.
 - Long-press or the overflow menu opens track actions: Play next, Add to queue, Add to playlist, Favorite, Share, Delete.
 
+### Design plan (approved 2026-10-25)
+
+- **Library screen:** top bar "Library" (search and sort actions), `PrimaryTabRow` Songs / Albums / Artists / Folders; Songs, Artists, Folders are `LazyColumn`; Albums is a 2-column `LazyVerticalGrid` with 16dp gaps.
+- **Song row:** 72dp `ListItem`; 48dp artwork (small shape); title body large, artist body medium, both single line; trailing duration label medium + overflow `IconButton` ("More options for <title>").
+- **Album tile:** 1:1 artwork (medium shape), title body large, artist body medium. **Artist row:** circular 48dp avatar, track count supporting text. **Folder row:** folder icon tile, track count.
+- **List header:** two equal `FilledTonalButton`s "Play all" and "Shuffle", 16dp side padding, 8dp gap.
+- **Detail screens (album, artist, folder):** collapsing large header with big artwork and artwork-tinted gradient, title large, subtitle ("Album • 2024 • 12 songs"), then header buttons and song rows. Folders are a flat list of containing folders.
+- **Track action sheet:** `ModalBottomSheet` (scrollable) headed by the song row, then actions with leading icons; long-press triggers haptic feedback.
+- **Sort:** `DropdownMenu` from the sort action: Title, Artist, Album, Date added, Duration, plus ascending/descending toggle.
+- **Access states:** denied → centered permission screen (icon, headline medium, rationale, filled button "Grant access" or "Open settings" when permanently denied); partial (Android 14+) → non-dismissable banner below tabs "Showing part of your library." with "Allow all"; scanning with empty cache → progress + "Scanning your music…"; empty → "No music found".
+- **Transitions:** fade-through 250ms between tabs and into detail screens.
+
 ## Related blueprints
 
 ### Required

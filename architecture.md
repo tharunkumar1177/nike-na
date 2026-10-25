@@ -28,7 +28,9 @@ Versions verified against Google Maven, Maven Central, and GitHub releases on 20
 | Images | Coil 3 | 3.6.3 |
 | Navigation / Lifecycle / Activity | navigation-compose / lifecycle / activity-compose | 2.10.2 / 2.11.0 / 2.13.0 |
 | Async | kotlinx-coroutines | 1.11.0 |
-| SDK levels | minSdk / compileSdk / targetSdk | 33 / 36 / 36 |
+| SDK levels | minSdk / compileSdk / targetSdk | 33 / 37 / 36 |
+
+compileSdk is 37 because Compose 1.12, core-ktx 1.19, and lifecycle 2.11 require compiling against API 37; targetSdk stays 36 so runtime behavior follows Android 16 rules.
 
 Rationale: native Kotlin keeps `MediaSessionService`, `MediaStore` observation, and `android.media.audiofx` first-class with no bridge layer; cross-platform stacks would need native plugins for exactly the parts that matter most. `minSdk 33` (Android 13) gives a single permission model (`READ_MEDIA_AUDIO`, `POST_NOTIFICATIONS`) and guaranteed Material You dynamic color.
 

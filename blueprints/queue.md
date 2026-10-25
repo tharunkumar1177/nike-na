@@ -20,6 +20,12 @@ Users see and control what plays next: a visible "Up next" list with Play next a
 - Shuffle reorders only upcoming items and keeps the current track; turning shuffle off restores the original order.
 - A track deleted from the device is removed from the queue silently.
 
+### Design plan (approved 2026-10-25)
+
+- `ModalBottomSheet` titled "Up next" with shuffle and repeat toggles in the header.
+- Current track row highlighted in primary color with an animated bars indicator; upcoming rows have a 24dp drag handle on the right; dragged item lifts to 8dp.
+- Swipe left removes with snackbar "Removed from queue" / "Undo".
+
 ## Related blueprints
 
 ### Required

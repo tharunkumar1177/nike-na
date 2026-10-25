@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.music.player"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.music.player"
@@ -41,8 +41,6 @@ android {
         abortOnError = true
         checkDependencies = false
         disable += setOf("GradleDependency", "NewerVersionAvailable", "AndroidGradlePluginVersion")
-        xmlReport = true
-        htmlReport = true
     }
 
     testOptions {
@@ -62,6 +60,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.material.kolor)
     debugImplementation(libs.androidx.compose.ui.tooling)
 
     testImplementation(libs.junit)
