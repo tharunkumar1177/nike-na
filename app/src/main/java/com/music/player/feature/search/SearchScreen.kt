@@ -1,6 +1,6 @@
 /*
  * Search screen: a focused search field with type-ahead results grouped into Songs, Albums,
- * and Artists. Implements blueprints/search.md.
+ * and Artists. Implements blueprints/search-sort.md.
  */
 package com.music.player.feature.search
 

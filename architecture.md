@@ -85,7 +85,7 @@ core.ui  ◀── feature.*   (core.ui depends only on core.model)
 
 - Repositories return `Result<T>` for one-shot operations; streams expose failures as a sealed UI state, never as thrown exceptions reaching Compose.
 - User-visible failures appear as a non-blocking snackbar with an action when one exists (retry, undo, open settings).
-- Missing permission is a first-class state (`LibraryAccess.Denied | Partial | Granted`), not an error.
+- Missing permission is a first-class state (`LibraryAccess.Denied | Granted`), not an error. Android 14+ partial media access does not cover audio, so there is no partial state.
 - Destructive actions (delete, remove from playlist, clear queue) offer undo; file deletion goes through `MediaStore.createDeleteRequest` / `createTrashRequest`, so the system confirms it.
 - A track that fails to decode is skipped with a snackbar; playback continues with the next item.
 

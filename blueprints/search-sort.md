@@ -6,7 +6,7 @@ Users find any song, album, or artist instantly with type-ahead search, and sort
 
 ## Current verified status
 
-**Status:** Planned.
+**Status:** Partial. The FTS4 search (title, artist, album, file name; `unicode61` strips diacritics), grouped results, the 150 ms debounce, and per-tab sort in DataStore are implemented and compile in CI. Text normalization, FTS match building, and sorting are unit-tested; type-ahead behavior is unverified on a device.
 
 ## Architecture dependencies
 
@@ -31,7 +31,12 @@ None
 
 ## Relevant implementation and tests
 
-- `feature/search/`, `core/data/` — planned
+- `feature/search/SearchScreen.kt`, `feature/search/SearchViewModel.kt` — focused field and grouped Songs (first 50), Albums (horizontal row), and Artists.
+- `core/data/LibraryQueries.kt` — `LibrarySorting`, `SearchText` (normalize, tokens, `ftsMatch`, `matches`).
+- `core/data/LibraryRepository.kt` (`search`, `sort`, `setSort`), `core/data/db/LibraryDao.kt`, `core/data/db/Entities.kt` (`TrackFtsEntity`).
+- `core/data/prefs/UserPreferences.kt` — sort per `LibraryTab`.
+- `feature/library/LibraryScreen.kt` — sort menu.
+- Tests: `app/src/test/java/com/music/player/core/data/LibraryQueriesTest.kt`.
 
 ## Acceptance or verification criteria
 
@@ -40,4 +45,4 @@ None
 
 ## Remaining gaps and unknowns
 
-None
+- Both criteria need a device.

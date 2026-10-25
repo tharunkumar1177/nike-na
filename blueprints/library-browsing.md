@@ -6,7 +6,7 @@ Users browse their library by Songs, Albums, Artists, and Folders, drill into an
 
 ## Current verified status
 
-**Status:** Planned.
+**Status:** Partial. The Library tabs, sort menu, album, artist, and folder detail screens, the track action sheet, and the access states are implemented and compile in CI. Rendering and scrolling behavior is unverified on a device.
 
 ## Architecture dependencies
 
@@ -44,7 +44,13 @@ Users browse their library by Songs, Albums, Artists, and Folders, drill into an
 
 ## Relevant implementation and tests
 
-- `feature/library/` — planned
+- `feature/library/LibraryScreen.kt` — top bar, sort `DropdownMenu`, `PrimaryTabRow` with a `HorizontalPager`, and the scanning and empty states.
+- `feature/library/DetailScreens.kt` — album, artist, and folder screens with an artwork-tinted gradient header.
+- `feature/library/LibraryViewModels.kt`, `feature/library/PermissionScreen.kt`.
+- `core/ui/components/LibraryItems.kt` — `SongRow`, `AlbumTile`, `ArtistRow`, `FolderRow`, `PlayShuffleHeader`, `EmptyState`, `LoadingState`.
+- `core/ui/components/TrackActions.kt` — the `TrackActions` contract and the action sheet. `ui/MusicApp.kt` implements the contract once for every screen.
+- `core/data/artwork/ArtworkFetcher.kt` — Coil fetcher using `ContentResolver.loadThumbnail`.
+- Tests: `app/src/test/java/com/music/player/core/ui/components/FormattingTest.kt`, `app/src/test/java/com/music/player/core/data/LibraryQueriesTest.kt`.
 
 ## Acceptance or verification criteria
 
@@ -54,4 +60,10 @@ Users browse their library by Songs, Albums, Artists, and Folders, drill into an
 
 ## Remaining gaps and unknowns
 
+- All three criteria need a device.
+- Differences from the design plan in the current code:
+  - The detail header is a static gradient header, not a collapsing one.
+  - Loading uses a progress indicator, not shimmer rows.
+  - The planned fade-through transitions between tabs and detail screens are not implemented; navigation uses the default transitions.
+  - No partial-access banner exists, because audio has no partial access (see [library-sync](library-sync.md)).
 - Genres are deferred to a later slice.

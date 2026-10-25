@@ -6,7 +6,7 @@ Every push and pull request is built, linted, and tested by GitHub Actions, whic
 
 ## Current verified status
 
-**Status:** Planned. No workflow or Gradle files exist yet.
+**Status:** Partial. The workflow and Gradle build exist, and CI passes lint, unit tests, and `assembleDebug` on the current branch. Launching the APK on a device is not verified by CI.
 
 ## Architecture dependencies
 
@@ -32,16 +32,17 @@ None
 
 ## Relevant implementation and tests
 
-- `.github/workflows/ci.yml` — planned
-- `gradle/libs.versions.toml`, `settings.gradle.kts`, `build.gradle.kts`, `app/build.gradle.kts` — planned
+- `.github/workflows/ci.yml` — triggers on `push`, `pull_request`, and `workflow_dispatch`; uploads `music-debug-apk` and, on failure, `build-reports`.
+- `gradle/libs.versions.toml`, `settings.gradle.kts`, `build.gradle.kts`, `app/build.gradle.kts` — the root declares `kotlin-android` with `apply false` only to pin the Kotlin Gradle plugin version; the app module uses AGP built-in Kotlin, KSP, and the Room Gradle plugin (`app/schemas/`).
 
 ## Acceptance or verification criteria
 
-- [ ] A push to any branch triggers the workflow.
-- [ ] Lint, unit tests, and `assembleDebug` pass.
-- [ ] A debug APK artifact is downloadable from the run.
+- [x] A push to any branch triggers the workflow.
+- [x] Lint, unit tests, and `assembleDebug` pass.
+- [x] A debug APK artifact is downloadable from the run.
 - [ ] The APK launches to an app shell screen on an Android 13+ device.
 
 ## Remaining gaps and unknowns
 
+- No instrumented (device or emulator) tests run in CI, so on-device behavior across all blueprints is unverified.
 - Release signing and Play Store distribution are out of scope until requested.

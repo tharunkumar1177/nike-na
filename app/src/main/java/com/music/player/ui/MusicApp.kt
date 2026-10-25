@@ -1,7 +1,7 @@
 /*
  * App root: theme seeded from the current artwork, permission gate, bottom navigation with the
  * four top-level destinations, the shared track actions, the player overlay, the queue sheet,
- * and the snackbar host. See architecture.md "UI shell".
+ * and the snackbar host. See architecture.md "Component model".
  */
 package com.music.player.ui
 

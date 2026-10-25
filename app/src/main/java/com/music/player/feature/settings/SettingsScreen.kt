@@ -1,6 +1,7 @@
 /*
  * Settings screen: theme mode, artwork-derived colors, the short-file filter, library rescan,
- * and an About section. Implements blueprints/settings.md.
+ * and an About section. Appearance follows blueprints/visual-theme.md; the filter and rescan
+ * follow blueprints/library-sync.md.
  */
 package com.music.player.feature.settings
 
