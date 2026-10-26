@@ -1,19 +1,12 @@
-
-
 optimize the guardrails for AI Agent. Do not elaborate it or exaggerate it. keep it short and simple
-
-
 
 Github Actions CI is the only compile and Build authority, there is no local runtime. 
 By default use Blueprints skill for  managing context. first come up with a plan and write Agent file for cursor. Build our application with aesthetics and intuitive UI. 
-
 
 architect doesn't going to run build commands, it's job is to calculate the feasibility, trade-offs and future scope for better scalability and maintainbility
 I have described the Agent requirements vaguely, coming up with best config is your job
 
 considering the following, whil agent file, 
-
-
 
 
 If there is any architectural flaws/quirks - come up with a plan. Only proceeed further if it is approved. 
@@ -67,6 +60,7 @@ Bind every agent, including subagents. Hard rules come first; none may be traded
 - Manage context with the `blueprints` skill.
 - Never use GitHub Actions run IDs as verification status in blueprints.
 - Store diagrams in `assets/diagrams/` and wireframes in `assets/wireframes/`.
+
 
 
 ## Git commands
@@ -134,6 +128,12 @@ ssh -T git@github.com
 
 - Plan Mode ——> AI research your codebase and generate a structured implementation plan
 
+- **`.cursorignore`:** keeps the file out of Cursor's AI features and indexing. 
+
+Sidepanel chat → **Ctrl+I** or **Ctrl+L**
+Agent Layout → **Ctrl+E** (toggle)
+Agents Window → Open Agents Window
+
 
 
 ## AGENTIC Engineering practices
@@ -169,35 +169,7 @@ In the Agent Orchestration workflow, the main agent has to write code here after
 
 -----------------
 
-Sidepanel chat → **Ctrl+I** or **Ctrl+L**
-Agent Layout → **Ctrl+E** (toggle)
-Agents Window → Open Agents Window
 
-
-
-### What you get in Agent Layout
-
-Same agent features as elsewhere—modes (Agent, Ask, Plan, Debug), diffs, checkpoints, queued messages, browser tools—but the chrome is arranged for that workflow. Browser docs also call out extra session isolation when the integrated browser runs in this layout.
-
-### Related: “Agents Window”
-
-That’s a **different surface**: projects/agents list on the left, chat in the center, **Files / Terminal / Browser / Changes** on the right. Use it when you want a dedicated agent desk, not just **Ctrl+E** inside the normal editor window.
-
-### Settings you might see
-
-- **Cursor Settings → Agents** — auto-run, browser approval, usage summary, etc.
-- **`cursor.agent_layout_browser_beta_setting`** — community/forum beta flag for browser-in-layout; not in the main docs index.
-
-Docs: [Keyboard shortcuts](https://cursor.com/docs/reference/keyboard-shortcuts), [Agent overview](https://cursor.com/docs/agent/overview), [Agents Window](https://cursor.com/docs/agent/agents-window).
-
-
-
-
-For a new task, start a fresh chat instead (Ctrl+N in the IDE, /clear in the CLI). To bring over just part of an old chat, mention it with @Chats, or use /fork from a specific message.
-
-Alternatives: /clear for a new session, /fork to branch from a message.
-
-Start a new chat (/clear or /new in the CLI)
 
 
 -----------------
@@ -222,14 +194,9 @@ before answering.
 Context7 ....`researcher` and `architect` --- checking library APIs and versions. That would mean mentioning it in their files under `.cursor/agents/`. The remote option also fits your "nothing runs locally" rule, since no local process is involved.
 
 
-
 - If you have branch conflict, while commiting, stop and ask user
 
-
 ------------
-
-
-
 
 ## Worktree
 
@@ -268,10 +235,10 @@ The other entries are generated or vendored content where formatting doesn't mat
 
 
 
-I used a worktree because a hard reset in `c:\n-tracker` would have caused damage there and still wouldn't have fixed the problem.
+
 
 **What a hard reset would have done:**
-- **Deleted your staged files:** `git reset --hard` throws away everything staged. Because `README.md` and `prompts.md` were newly added and not yet committed, they would have been deleted from disk.
+- **Deleted your staged files:** `git reset --hard` throws away everything staged.
 - **Changed the other session's files:** that session had switched this folder to `promo-video` and was committing there. A reset or branch switch in the same folder would have changed the files it was working with.
 - **Left the real job undone:** a reset only removes my commit from `promo-video`. The commit still had to be added to `slice-2-project-shell`.
 
@@ -284,29 +251,15 @@ I used a worktree because a hard reset in `c:\n-tracker` would have caused damag
 
 -----------
 
-
-
-No push needed reverting, because the misplaced commit (`7e56d21`) was never pushed to `promo-video`. It only existed in your local copy of the branch. My push command named `slice-2-project-shell` explicitly, and the copy of `promo-video` on GitHub stayed at `b28393c`, the other session's last promo commit. I confirmed that with `git fetch` and `git rev-parse origin/promo-video`.
-
-To remove the commit locally, I ran this in `c:\n-tracker`:
+To remove the commit locally:
 
 ```powershell
 git reset --keep HEAD~1
 ```
 
-This moved `promo-video` back one commit, to `b28393c`. I chose `--keep` over `--hard` because:
-- **It's selective:** it only rewrites files that the removed commit changed, which are the Slice 2 files.
-- **It keeps other uncommitted changes:** a hard reset would have discarded them.
-- **It refuses rather than overwrites:** if the reset would have clobbered a local edit, it stops instead.
-
-It did unstage your `.gitignore`, `README.md` and `prompts.md` without changing their contents, so I staged them again straight away.
-
-Nothing was rewritten on GitHub, so there was no force-push. The commit's contents weren't lost either: a corrected version is on `main` through [PR #3](https://github.com/tharunkumar1177/tron/pull/3), and the original stays in git's local history log until it expires.
-
-
-
-
-
+ `--keep` over `--hard` because:
+ - rewrites files that the removed commit changed
+ - hard reset would have discarded them.
 
 
 
@@ -317,24 +270,20 @@ Nothing was rewritten on GitHub, so there was no force-push. The commit's conten
 
 
 
-For a "never read this file" instruction, there's almost no difference. Both are just text added to the model's prompt, and neither one actually stops a file from being read. They differ in how and when the instruction gets loaded.
+They differ in how and when the instruction gets loaded.
 
 **`AGENTS.md`**
-- Plain markdown with no configuration.
-- The root file is always included in every agent request. A nested `AGENTS.md` in a subfolder applies when working in that folder.
-- It's the simplest choice for project-wide guardrails
+- no config, always included in every agent request.
 
 **`.cursor/rules/*.mdc`**
 - Each rule has frontmatter (`description`, `globs`, `alwaysApply`) that controls when it's loaded:
   - **Always** `alwaysApply: true`
   - **Auto-attached:** loaded when files matching `globs` are in context.
   - **Agent-requested:** the model decides from the `description` whether to pull it in.
-  - **Manual:** - @-mention the rule
 
-**The catch for your case:** don't use an auto-attached rule with `globs: prompts.md`. It would only load once `prompts.md` is already in context, which means after it has been read. A "don't read" rule has to be always-on, so `AGENTS.md` or an `alwaysApply: true` rule are equivalent here.
 
 **If you want actual enforcement rather than a request:**
-- **`.cursorignore`:** keeps the file out of Cursor's AI features and indexing. 
+
 
 
 
@@ -342,12 +291,6 @@ For a "never read this file" instruction, there's almost no difference. Both are
 
  read-blocking hook to enforce it.
 
-
-
-**What each part blocks:**
-- **`beforeReadFile`:** any agent file read of `prompts.md`.
-- **`beforeShellExecution`:** commands that mention it, such as `cat prompts.md`, `Get-Content .\prompts.md`, or `type prompts*`. The `prompts` matcher means the script only runs for those commands, not every shell command.
-- **`preToolUse`:** a Read or Grep aimed directly at the file or a `prompts*` glob.
 
 
 **Gaps:**
@@ -381,7 +324,7 @@ Never consider project root folder; archictecture.md is the only source of truth
 - command text arrives as part of your first message, not as standing context. In a long build session, Cursor may summarize older messages to save space, and the detailed build loop could get compressed away.... `AGENTS.md`:
 
 ```markdown
-Main agent: when running a build session, re-read `.cursor/commands/oneshotbuild.md` at the start of each slice.
+Main agent: when running a build session, re-read `.cursor/commands/orchestrator.md` at the start of each slice.
 ```
 
 
@@ -389,4 +332,91 @@ Main agent: when running a build session, re-read `.cursor/commands/oneshotbuild
 
 
 prompts.log
+
+Goal is to build a music app (like the music app in mobile by default), but it should look like those, I want it to be more aesthetic and intuitive.
+
+Build an android Music app (with Kotlin or suggest me any other optimal stack to build it). First come up with the plan (optimal tech stack ...) and then start building it with the help of subagents.
+
+- with trade-offs
+
+
+-------------
+
+
+The line is close, but not the best version yet. It says who the agent is and where its output goes, but leaves the most important consequence implicit. Two lines elsewhere in the files also contradict it.
+
+**What works:** the same sentence in five files isn't redundant when the agents run, because each subagent sees only its own file. Placing it right after the persona is also the right spot.
+
+**What could be better:**
+
+1. **It doesn't say what to do when the agent is blocked.** "Not to the user" implies the subagent can't ask you anything, but agents follow instructions more reliably when the behavior is spelled out. A tighter version:
+
+   ```markdown
+   You are a subagent. The main agent delegates a task to you and receives your final message. You can't reach the user, so put blockers and open questions in that message.
+   ```
+
+   This also fits the "Open questions" fields the output formats already have. In `architect`, for example, it's "items needing user approval," which the main agent passes on to you.
+
+2. **Two files contradict it.** `coder.md` line 52 and `ci-reviewer.md` line 42 both say "If `gh` is unavailable, stop and ask me for the logs." A subagent can't ask you. Those lines should say to stop and report that `gh` is unavailable in the final message.
+
+3. **Several agent files repeat guardrails.** Examples are the forbidden word in `designer.md` and `ci-reviewer.md`, and the `gh` rule in `coder.md`. If subagents load `AGENTS.md`, these copies are redundant, the same issue you raised about the command. If they don't load it, the copies are the only place those rules reach them. I'm not certain how Cursor handles this for custom subagents, so it's worth testing before deleting anything. One way to test: ask a subagent to quote its first guardrail from `AGENTS.md`.
+
+Should I apply the tighter sentence and fix the two "ask me" lines?
+
+
+
+---------------
+
+
+
+You're reading the phrase as "function a doc comment," but it parses as "give **every function** **a doc comment**." It means every function in the codebase should have a documentation comment.
+
+A **doc comment** is a specially formatted comment placed directly above (or, in Python, just inside) a function. It explains what the function does, what its inputs are, and what it returns. Your editor shows it when you hover over the function, and documentation tools can turn it into reference docs. Each language has its own format.
+
+TypeScript/JavaScript uses JSDoc or TSDoc:
+
+```typescript
+/**
+ * Calculates the cart total including tax.
+ * @param items - Line items in the cart.
+ * @param taxRate - Tax rate as a decimal, e.g. 0.08.
+ * @returns The total price in cents.
+ * @throws If any item has a negative quantity.
+ */
+function cartTotal(items: LineItem[], taxRate: number): number { ... }
+```
+
+Python uses a docstring:
+
+```python
+def cart_total(items: list[LineItem], tax_rate: float) -> int:
+    """Calculate the cart total including tax.
+
+    Args:
+        items: Line items in the cart.
+        tax_rate: Tax rate as a decimal, e.g. 0.08.
+
+    Returns:
+        The total price in cents.
+    """
+```
+
+The same rule also asks for a **header comment**. That one goes at the top of each file and describes what the whole file is for. A doc comment describes a single function.
+
+If the current wording is confusing, this version is clearer:
+
+```markdown
+- Start every file with a header comment describing its purpose.
+- Document every function with a doc comment (JSDoc/TSDoc, docstring, etc.) covering purpose, parameters, return value, and errors.
+```
+
+
+If the agent reads an file, does the file context gets loaded into the 
+
+
+If you forget to type /orchestrate, the main agent sees only the Guardrails and acts as a general assistant. It won't delegate, run the build loop, or update ROADMAP.md.
+
+
+Cost and speed: AGENTS.md sits at the start of the prompt and is identical every time, so prompt caching applies. After the first call, the provider reuses the cached prefix, which is much cheaper and faster than processing it fresh.
+
 
