@@ -1,3 +1,57 @@
+Recommended stack: native Kotlin. Playback while the app is in the background, the phone's music index (MediaStore, which tells the app which audio files are on the device), and the equalizer are all Android-native features. Flutter, React Native, or Kotlin Multiplatform would each need native plugins for exactly those parts. I checked these versions against the official registries myself, because the subagents' version numbers were partly stale or invented:
+
+Language and build: Kotlin 2.4.21, AGP 9.4.1, Gradle 9.8.2
+UI: Jetpack Compose BOM 2026.09.00 with Material 3
+Playback: Media3 1.11.1 (ExoPlayer plus a media session, for notification, lock-screen and Bluetooth controls)
+Local storage: Room 2.8.5 as a fast cache of the music index, and DataStore 1.3.0 for settings
+Other libraries: Koin 4.2.2 for dependency injection, Coil 3.6.3 for album art
+CI: GitHub Actions builds, lints and tests every push, then publishes a debug APK you can install
+What makes it nicer than the stock apps. This comes from three research briefs, including one on user complaints about current players:
+
+No ads and no internet permission at all.
+The app's colors adapt to the current song's album art.
+The mini player expands into the full player as you drag it, and swiping down only collapses it, never exits the app.
+Playback controls sit in the bottom third of the screen, where your thumb reaches.
+A visible "Up next" queue with separate "Play next" and "Add to queue" actions.
+Deletes and removals can be undone.
+Songs without artwork get a generated gradient tile instead of a grey icon.
+The library updates in the background without freezing, even with 50,000 songs.
+Build order. The architect and I split the work into thin slices, each built and checked in CI on its own:
+
+Project scaffold and CI pipeline
+Songs list from your device
+Background playback with notification controls
+Mini player and full now-playing screen
+Albums, artists and folders
+Queue
+Playlists and favorites
+Search and sort
+Share and delete
+Later slices cover lyrics, equalizer, sleep timer, widgets, genres, Android Auto and tag editing.
+
+-------
+What's in it:
+
+Library: your phone's songs, read from the system media index and cached locally. It has Songs, Albums, Artists and Folders tabs with detail pages, sorting, and a setting to hide short clips.
+Playback: keeps playing in the background, with notification and lock-screen controls. It pauses when headphones are unplugged, and your queue is restored when you reopen the app.
+Player: a mini player that you drag up into a full Now Playing screen. It has blurred artwork behind it, a seek bar, and swipe left or right to skip. The app's colors change to match each album cover.
+Queue: drag to reorder, swipe to remove with undo, play next, add to queue, shuffle and repeat.
+Playlists and Favorites: create, rename, reorder and delete playlists, with undo. Undo still works after you leave the screen.
+Search as you type across songs, albums and artists, ignoring accents.
+Settings: light, dark or follow the system; album-cover colors on or off; rescan the library.
+Share a song, or delete it via the system's recoverable trash.
+The app has no internet permission.
+How to try it: open the latest CI run on main in GitHub Actions and download the music-debug-apk artifact. Install it on an Android 13+ phone.
+
+Known gaps (recorded in the blueprints, so they'll be picked up later):
+
+There are no on-device tests in CI.
+Playlist database logic has no tests yet.
+The queue has no "Clear" or "Save as playlist".
+Delete only moves songs to the trash; there's no permanent delete, and you can't share several songs at once.
+A few planned visual touches are missing: collapsing detail headers, shimmer loading rows, and fade transitions between screens.
+
+--------------
 optimize the guardrails for AI Agent. Do not elaborate it or exaggerate it. keep it short and simple
 
 Github Actions CI is the only compile and Build authority, there is no local runtime. 
@@ -146,6 +200,8 @@ Agents Window → Open Agents Window
 ### Prompt structure
 
 ```
+    <goal - (Existing product, examples)>
+
     <rules>                                     ——  AGENTS.md
     <context - (Feature requirement, task...)>  
         <problem>
@@ -419,4 +475,15 @@ If you forget to type /orchestrate, the main agent sees only the Guardrails and 
 
 Cost and speed: AGENTS.md sits at the start of the prompt and is identical every time, so prompt caching applies. After the first call, the provider reuses the cached prefix, which is much cheaper and faster than processing it fresh.
 
+
+Border / Margin less wireframes -> svg...
+
+
+Goal is to build a music app (like the music app in mobile by default), but it should look like those, I want it to be more aesthetic and intuitive.
+
+ship the whole app at once, build the slices back to back and verify each in CI, with no stop for a report after each slice.
+
+
+Subagents didn't load AGENTS.md at all. Then line 3 would be pointless, but the Guardrails wouldn't reach subagents either.
+Each subagent file said "ignore the Orchestrator section of AGENTS.md." That moves the same sentence into six files instead of keeping it in one.
 

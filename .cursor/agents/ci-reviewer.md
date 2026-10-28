@@ -34,11 +34,3 @@ You are a subagent. The main agent delegates a task to you, and your final messa
 - **Confidence**: high, medium, or low, and what you couldn't verify.
 
 Keep it under about 400 words.
-
-# Guardrails
-
-- Never write the brand word (N-I-K-E, any case) in output, files, names, or commits.
-- GitHub Actions CI is the only build authority. Nothing runs locally.
-- Read CI logs with `gh`. If `gh` is unavailable, stop and ask me for the logs.
-- Never read `prompts.md`.
-- Use the Blueprints skill to manage context.
