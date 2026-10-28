@@ -188,7 +188,8 @@ fun PlayerSheet(
             val margin = Spacing.md.toPx()
             val collapsedTop = (fullH - collapsedBottom.toPx() - Spacing.xs.toPx() - miniH).coerceAtLeast(0f)
             val travel = collapsedTop.coerceAtLeast(1f)
-            val p = expansion.value
+            // The spring overshoots past 1; unclamped, corner radius and elevation go negative and throw.
+            val p = expansion.value.coerceIn(0f, 1f)
 
             val top = collapsedTop * (1f - p)
             val hMargin = margin * (1f - p)
